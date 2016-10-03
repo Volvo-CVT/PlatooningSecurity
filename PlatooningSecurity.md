@@ -22,7 +22,7 @@ The lead vehicle as the coordinator can be responsible for generating and exchan
 ### Key exchange phase
 In the following examples the Lead vehicle is called (A) and the platooning vehicles (B), (C) and so forth. 
 
-1.	First vehicle joining the lead vehicle
+1.	**First vehicle joining the lead vehicle**
  
  * Upon joining the platoon, (B) must first create a JoinRequest message. The JoinRequest message includes keyRequest which itself includes the cipher-suite that the vehicle support and timestamp (to avoid replay attack in future), a signature of the keyRequest and the current Pseudo-Certificate in use by the vehicle. B broadcasts the JoinRequest message.
  
@@ -44,5 +44,29 @@ In the following examples the Lead vehicle is called (A) and the platooning vehi
 
  *  (B) must send an Acknowledgment to (A) reporting that it received the symmetric key successfully. The Ack includes (B)’s pseudo-Id (taken from (B)’s certificate) and a timestamp encrypted with (A)’s public key. A signature is made by (B)’s private key and appended to the message. (B)’s pseudo-Id must be appended again so (A) would know which cached public key must be used to verify the signature.
 
-![image](https://cloud.githubusercontent.com/assets/3536075/19036662/6cd6db26-8971-11e6-869d-69878fc1f6ea.png)
+ ![image](https://cloud.githubusercontent.com/assets/3536075/19036662/6cd6db26-8971-11e6-869d-69878fc1f6ea.png)
+
+2.	**More vehicles join the platoon**
+
+ * The lead truck has already generated and exchanged the keys with the first vehicle therefore other vehicles handshake for key exchange would be slightly different. The lead truck would only have to verify the joining vehicles’ certificate and exchange the already generated key with them. So all the vehicles would be able to group communicate with each other.
+
+3.	**Leaving the platoon**
+
+ * On leaving one or more vehicles from the platoon, for security resasons the lead truck must revoke the current keys in use and generate new ones. Since the vehicles’ certificates are cached in the lead truck, the lead truck will do the key exchange with each remaining vehicle with the new key. After receiving Ack from all following vehicles, the lead truck starts using the new keys in the next message. It would be needed to have a field in message header (e.g. incremented number) which shows which key is used in security operation.
+ 
+### Secured communication phase
++ **Message Authentication Code**
+ 
+ From now on (A) and (B) possess a shared symmetric key which can be used to encrypt the message securely and efficiently. A confidential message (encrypted) might seem to be enough in the first glance. But the message must also be secured against intentional or unintentional changes within the communication. The receiver must also be able to authenticate the message. 
+ Message Authentication Code (MAC) is extremely useful in communication secured with symmetric cryptography. A MAC algorithm usually gets a symmetric key and the clear text, generates a MAC of the message which then can be appended to the clear text and transmitted to other end. It is more or less similar to the “signature” functionality in public-key cryptography.
+
++	**HMAC or Keyed-Hash MAC**
+ 
+ Hash MAC (HMAC) is a specific type of MAC which uses a key and a specific type of cryptographic hash function to calculate the MAC. HMAC must not be confused with cryptographic hash functions such as SHA-1. HMAC utilizes cryptographic hash functions to generate the MAC of message for message-integrity and message-authenticity. The key used in HMAC must also be known to both parties. In the key exchange protocol (A) generated 2 keys one for encryption purpose and for HMAC.
+
++	**Authenticated Encryption**
+
+ Having the HMAC (for message authenticity and integrity) and AES algorithm for confidentiality, the communication security can be performed in Authenticated Encryption mode.  There are different approaches how to and in what order to use these tools (e.g. MTE or Mac then Encrypt used in SSL/TLS). We are going to use **ETM mode** (Encrypt then MAC) implying that the message is first encrypted then the MAC is performed on the encrypted message or ciphertext. The result will be appended to the encrypted message. Thus, the algorithm would be **AES256-CBC-HMAC-SHA256**. In practice, an Initialization Vector (IV) must be prepended to the message and the ciphertext for purposes outside the scope of this document. If key1 and key2 assumed as the key for AES and HMAC respectively, sequence diagram below shows the secured communication phase in platoon.
+
+ ![image](https://cloud.githubusercontent.com/assets/3536075/19038362/7592c806-897b-11e6-9c82-0c33114179ae.png)
 

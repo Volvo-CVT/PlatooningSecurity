@@ -25,7 +25,7 @@ A road train made by vehicles wirelessly coupled together all under control of a
 ![image](https://cloud.githubusercontent.com/assets/3536075/19033412/89a0e9d0-895e-11e6-8399-412cc54b5a36.png)
 
 ## Advantages:
- - Reduces Air Drag
+ - Reduces Air Drag (and therefore Fuel Consumption)
  - Increases Safety and Comfort
  - Increases Road Capacity
 

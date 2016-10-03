@@ -29,6 +29,5 @@ A road train made by vehicles wirelessly coupled together all under control of a
  - Increases Safety and Comfort
  - Increases Road Capacity
 
-### Learn more on Platooning Security
-https://github.com/Volvo-CVT/PlatooningSecurity/blob/master/PlatooningSecurity.md
+### [Learn more on Platooning Security] (https://github.com/Volvo-CVT/PlatooningSecurity/blob/master/PlatooningSecurity.md)
 
